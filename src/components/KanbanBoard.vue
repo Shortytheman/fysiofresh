@@ -2,14 +2,8 @@
   <v-btn @click="toggleCardForm" color="primary">Add New Card</v-btn>
 
   <!-- Custom Header for the Board -->
-  <v-text-field
-    v-model="boardTitle"
-    label="Board Title"
-    class="board-title"
-    outlined
-    dense
-    :style="{ fontSize: '2em', textAlign: 'center' }"
-  />
+  <v-text-field v-model="boardTitle" label="Board Title" class="board-title" outlined dense
+    :style="{ fontSize: '2em', textAlign: 'center' }" />
 
   <!-- Conditional input fields for title and description -->
   <div v-if="isFormVisible" class="new-card-form">
@@ -21,22 +15,11 @@
 
   <!-- Trashcan for deleting cards -->
   <v-row class="kanban-board">
-    <KanbanColumn
-      v-for="(column, index) in columns"
-      :key="index"
-      :columnName="column.name"
-      :cards="column.cards"
-      @card-dropped="handleCardDropped"
-      @card-dragstart="handleCardDragStart"
-    />
+    <KanbanColumn v-for="(column, index) in columns" :key="index" :columnName="column.name" :cards="column.cards"
+      @card-dropped="handleCardDropped" />
 
     <!-- Trashcan Icon -->
-    <v-col
-      class="trashcan-column"
-      cols="3"
-      @dragover.prevent
-      @drop="handleCardDelete"
-    >
+    <v-col class="trashcan-column" cols="3" @dragover.prevent @drop="handleCardDelete">
       <v-icon color="red" large>mdi-delete</v-icon>
       <p>Drag cards here to delete</p>
     </v-col>
@@ -47,23 +30,28 @@
 import { defineComponent, ref } from 'vue';
 import KanbanColumn from './KanbanColumn.vue';
 
+interface Card {
+  title: string;
+  description: string;
+  color: string;
+}
+
 export default defineComponent({
   name: 'KanbanBoard',
   components: {
-    KanbanColumn
+    KanbanColumn,
   },
   setup() {
     const columns = ref([
-      { name: 'To Do', cards: [] },
-      { name: 'In Progress', cards: [] },
-      { name: 'Done', cards: [] }
+      { name: 'To Do', cards: [] as Card[] },
+      { name: 'In Progress', cards: [] as Card[] },
+      { name: 'Done', cards: [] as Card[] },
     ]);
+
     const boardTitle = ref('My Kanban Board');
     const isFormVisible = ref(false);
     const newCardTitle = ref('');
     const newCardDescription = ref('');
-    const draggedCardIndex = ref<number | null>(null);
-    const draggedCardColumn = ref<string | null>(null);
 
     const toggleCardForm = () => {
       isFormVisible.value = !isFormVisible.value;
@@ -77,16 +65,17 @@ export default defineComponent({
 
     const addCard = () => {
       if (newCardTitle.value && newCardDescription.value) {
-        const newCard = {
+        const newCard: Card = {
           title: newCardTitle.value,
           description: newCardDescription.value,
-          color: '#FFFFFF'
+          color: '#FFFFFF',
         };
         columns.value[0].cards.push(newCard);
         cancelAddCard();
       }
     };
 
+    // Ensure this function is correctly defined
     const handleCardDropped = (payload: { draggedCardIndex: number, draggedCardColumn: string, targetColumn: string }) => {
       const { draggedCardIndex, draggedCardColumn, targetColumn } = payload;
       const draggedCard = columns.value.find((col) => col.name === draggedCardColumn)?.cards[draggedCardIndex];
@@ -94,11 +83,6 @@ export default defineComponent({
         columns.value.find((col) => col.name === draggedCardColumn)?.cards.splice(draggedCardIndex, 1);
         columns.value.find((col) => col.name === targetColumn)?.cards.push(draggedCard);
       }
-    };
-
-    const handleCardDragStart = (index: number, columnName: string) => {
-      draggedCardIndex.value = index;
-      draggedCardColumn.value = columnName;
     };
 
     const handleCardDelete = (event: DragEvent) => {
@@ -113,6 +97,9 @@ export default defineComponent({
       }
     };
 
+
+
+    // Ensure all methods are returned
     return {
       columns,
       boardTitle,
@@ -122,13 +109,14 @@ export default defineComponent({
       toggleCardForm,
       cancelAddCard,
       addCard,
-      handleCardDropped,
-      handleCardDragStart,
-      handleCardDelete
+      handleCardDropped,  // Add this to the return object
+      handleCardDelete     // Ensure this is also returned
     };
-  }
+  },
 });
 </script>
+
+
 
 
 

@@ -16,41 +16,32 @@
   export default defineComponent({
     name: 'KanbanCard',
     props: {
-      title: {
-        type: String,
-        required: true
-      },
-      description: {
-        type: String,
-        required: true
-      },
-      index: {
-        type: Number,
-        required: true
-      },
-      columnName: {
-        type: String,
-        required: true
-      }
+      title: { type: String, required: true },
+      description: { type: String, required: true },
+      index: { type: Number, required: true },
+      columnName: { type: String, required: true },
     },
     setup(props) {
       const dragStart = (event: DragEvent) => {
         event.dataTransfer?.setData('cardIndex', props.index.toString());
         event.dataTransfer?.setData('columnName', props.columnName);
-        event.target?.classList.add('dragging');
+        const target = event.target as HTMLElement;
+        target?.classList.add('dragging');
       };
   
       const dragEnd = (event: DragEvent) => {
-        event.target?.classList.remove('dragging');
+        const target = event.target as HTMLElement;
+        target?.classList.remove('dragging');
       };
   
       return {
         dragStart,
-        dragEnd
+        dragEnd,
       };
-    }
+    },
   });
   </script>
+  
   
   
   <style scoped>
